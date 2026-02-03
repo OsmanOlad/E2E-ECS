@@ -84,11 +84,11 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name      = "app"
-      image     = "nginx:latest" 
+      image     = "446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo" 
       essential = true
       portMappings = [{
-        containerPort = 80
-        hostPort      = 80
+        containerPort = 8080
+        hostPort      = 8080
       }]
       logConfiguration = {
         logDriver = "awslogs"
@@ -99,7 +99,7 @@ resource "aws_ecs_task_definition" "app" {
         }
       }
       environment = [
-        { name = "DYNAMODB_TABLE", value = "${var.project_name}-urls" }
+        { name = "TABLE_NAME", value = "${var.project_name}-urls" }
       ]
     }
   ])
@@ -112,8 +112,8 @@ resource "aws_security_group" "ecs_tasks" {
 
   ingress {
     protocol        = "tcp"
-    from_port       = 80
-    to_port         = 80
+    from_port       = 8080
+    to_port         = 8080
     security_groups = [var.alb_security_group_id]
   }
 
@@ -143,6 +143,7 @@ resource "aws_ecs_service" "main" {
   load_balancer {
     target_group_arn = var.target_group_arn
     container_name   = "app"
-    container_port   = 80
+    container_port   = 8080
   }
 }
+
