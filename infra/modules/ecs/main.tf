@@ -106,7 +106,6 @@ resource "aws_ecs_task_definition" "app" {
 }
 
 
-# Security Group for ECS Tasks (Allows traffic ONLY from the ALB)
 resource "aws_security_group" "ecs_tasks" {
   name        = "${var.project_name}-ecs-tasks-sg"
   vpc_id      = var.vpc_id
@@ -138,7 +137,7 @@ resource "aws_ecs_service" "main" {
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks.id]
     subnets          = var.private_subnet_ids
-    assign_public_ip = false # Keeps it private!
+    assign_public_ip = false
   }
 
   load_balancer {

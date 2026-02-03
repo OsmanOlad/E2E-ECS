@@ -21,24 +21,24 @@ provider "aws" {
 
 module "vpc" {
   source       = "../../modules/vpc"
-  project_name = "E2E-ECS-DEV"
+  project_name = "e2e-ecs-dev"
 }
 
 module "database" {
   source       = "../../modules/database"
-  project_name = "E2E-ECS-DEV"
+  project_name = "e2e-ecs-dev"
 }
 
 module "alb" {
   source            = "../../modules/alb"
-  project_name      = "E2E-ECS-DEV"
+  project_name      = "e2e-ecs-dev"
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
 }
 
 module "ecs" {
   source                = "../../modules/ecs"
-  project_name          = "E2E-ECS-DEV"
+  project_name          = "e2e-ecs-dev"
   vpc_id                = module.vpc.vpc_id
   private_subnet_ids    = module.vpc.private_subnet_ids
   target_group_arn      = module.alb.target_group_arn
@@ -49,5 +49,5 @@ module "ecs" {
 
 module "ecr" {
   source       = "../../modules/ecr"
-  project_name = "E2E-ECS-DEV"
+  project_name = "e2e-ecs-dev"
 }
