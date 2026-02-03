@@ -45,3 +45,9 @@ module "ecs" {
   alb_security_group_id = module.alb.alb_security_group_id
   dynamodb_table_arn    = module.database.table_arn
 } 
+
+
+module "ecr" {
+  source       = "../../modules/ecr"
+  project_name = "E2E-ECS-DEV"
+}
