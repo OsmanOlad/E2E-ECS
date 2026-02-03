@@ -23,7 +23,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::446781112519:role/github-oidc-role
+          role-to-assume: arn:aws:iam::446781112519:role/github-actions-ecs-deploy-role
           aws-region: eu-west-2
 
       - name: Setup Terraform
