@@ -6,11 +6,53 @@ on:
       - dev
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: read  # Required to checkout code
+  id-token: write
+  contents: read  
 
 jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest flask boto3
+
+      - name: Run Unit Tests
+        env:
+          TABLE_NAME: mock-table
+          PYTHONPATH: ${{ github.workspace }}/application/src
+        run: |
+          pytest application/src/test_app.py
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::446781112519:role/github-actions-ecs-deploy-role
+          aws-region: eu-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: e2e-ecs-dev-repo
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./application
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
   terraform:
+    needs: ci
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,4 +80,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
         run: terraform apply -auto-approve
-# Trigger
+
