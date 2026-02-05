@@ -83,7 +83,7 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([
     {
-      name      = "app"
+      name      = "url-shortener"
       image     = "446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo" 
       essential = true
       portMappings = [{
@@ -142,7 +142,7 @@ resource "aws_ecs_service" "main" {
 
   load_balancer {
     target_group_arn = var.target_group_arn
-    container_name   = "app"
+    container_name   = "url-shortener"
     container_port   = 8080
   }
   lifecycle {
