@@ -21,13 +21,13 @@ def shorten_url():
         return jsonify({"error": "URL is required"}), 400
 
     short_code = str(uuid.uuid4())[:8]
-    table.put_item(Item={'id': short_code, 'url': long_url})
+    table.put_item(Item={'URLID': short_code, 'url': long_url})
     
     return jsonify({"short": short_code, "url": long_url}), 201
 
 @app.route('/<short_code>', methods=['GET'])
 def redirect_to_url(short_code):
-    response = table.get_item(Key={'id': short_code})
+    response = table.get_item(Key={'URLID': short_code})
     item = response.get('Item')
     if not item:
         return jsonify({"error": "URL not found"}), 404

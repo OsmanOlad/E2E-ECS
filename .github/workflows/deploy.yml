@@ -28,8 +28,10 @@ jobs:
       - name: Run Unit Tests
         env:
           TABLE_NAME: mock-table
-          PYTHONPATH: ${{ github.workspace }}/application/src
+          PYTHONPATH: ./application/src
         run: |
+          pwd
+          ls -f 
           pytest application/src/test_app.py
       
       - name: Configure AWS Credentials
