@@ -145,5 +145,11 @@ resource "aws_ecs_service" "main" {
     container_name   = "app"
     container_port   = 8080
   }
+  lifecycle {
+    ignore_changes = [
+      task_definition,
+      load_balancer
+    ]
+  }
 }
 

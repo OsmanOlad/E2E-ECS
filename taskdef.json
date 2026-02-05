@@ -1,0 +1,32 @@
+{
+    "family": "url-shortener-task",
+    "networkMode": "awsvpc",
+    "executionRoleArn": "arn:aws:iam::446781112519:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::446781112519:role/ecsTaskRole",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "containerDefinitions": [
+        {
+            "name": "url-shortener",
+            "image": "446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo:latest",
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/url-shortener",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}

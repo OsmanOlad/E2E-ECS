@@ -83,3 +83,23 @@ jobs:
         if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
         run: terraform apply -auto-approve
 
+
+      - name: new image id in ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: taskdef.json
+          container-name: url-shortener
+          image: 446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo:${{ github.sha }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: e2e-ecs-dev-service
+          cluster: e2e-ecs-dev-cluster
+          codedeploy-appspec: appspec.yml
+          codedeploy-application: e2e-ecs-dev-app
+          codedeploy-deployment-group: e2e-ecs-dev-dg
+          wait-for-service-stability: true
+     
