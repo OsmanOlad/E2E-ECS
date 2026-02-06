@@ -145,11 +145,11 @@ resource "aws_ecs_service" "main" {
     container_name   = "url-shortener"
     container_port   = 8080
   }
-  lifecycle {
-    ignore_changes = [
-      task_definition,
-      load_balancer
-    ]
-  }
+ # lifecycle {
+  #  ignore_changes = [
+   #   task_definition,
+    #  load_balancer
+    #]
+  #}
 }
 
