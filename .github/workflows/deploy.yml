@@ -30,8 +30,6 @@ jobs:
           TABLE_NAME: mock-table
           PYTHONPATH: ./application/src
         run: |
-          pwd
-          ls -f 
           pytest application/src/test_app.py
       
       - name: Configure AWS Credentials
@@ -48,10 +46,11 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: e2e-ecs-dev-repo
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./application
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest ./application
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   terraform:
     needs: ci
@@ -102,4 +101,4 @@ jobs:
           codedeploy-application: e2e-ecs-dev-app
           codedeploy-deployment-group: e2e-ecs-dev-dg
           wait-for-service-stability: true
-     
+    
