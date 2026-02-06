@@ -1,8 +1,8 @@
 {
-    "family": "url-shortener-task",
+    "family": "e2e-ecs-dev-task",
     "networkMode": "awsvpc",
-    "executionRoleArn": "arn:aws:iam::446781112519:role/ecsTaskExecutionRole",
-    "taskRoleArn": "arn:aws:iam::446781112519:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::446781112519:role/e2e-ecs-dev-ecs-task-execution-role",
+    "taskRoleArn": "arn:aws:iam::446781112519:role/e2e-ecs-dev-ecs-task-role",
     "requiresCompatibilities": [
         "FARGATE"
     ],
@@ -12,6 +12,7 @@
         {
             "name": "url-shortener",
             "image": "446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo:latest",
+            "essential": true,
             "portMappings": [
                 {
                     "containerPort": 8080,
@@ -22,11 +23,14 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/url-shortener",
+                    "awslogs-group": "/ecs/e2e-ecs-dev-app",
                     "awslogs-region": "eu-west-2",
                     "awslogs-stream-prefix": "ecs"
                 }
-            }
+            },
+           "environment": [
+                { "name": "TABLE_NAME", "value": "e2e-ecs-dev-urls" }
+            ]
         }
     ]
 }
