@@ -3,7 +3,7 @@ variable "project_name" {
   type        = string
 }
 
-variable "vpc_cidr" {
-  description = "The CIDR block for the VPC"
+variable "alb_arn" {
+  description = "The ARN of the ALB linked to the WAF"
   type        = string
 }

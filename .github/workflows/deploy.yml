@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - dev
+      - staging
+      - prod
 
 permissions:
   id-token: write
@@ -45,7 +47,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: e2e-ecs-dev-repo
+          ECR_REPOSITORY: e2e-ecs-${{ github.ref_name }}-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest ./application
@@ -57,11 +59,16 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./infra/envs/dev
+        working-directory: ./infra/envs/${{ github.ref_name }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      - name: Replace ENVIRONMENT placeholder in Task Definition
+        run: |
+          sed -i "s/ENVIRONMENT/${{ github.ref_name }}/g" ../../../taskdef.json
+          #just incase it breaks and i need to troubleshoot
+          cat taskdef.json
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -79,7 +86,7 @@ jobs:
         run: terraform plan  
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+        if: (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/prod') && github.event_name == 'push'
         run: terraform apply -auto-approve
 
 
@@ -87,18 +94,18 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: taskdef.json
+          task-definition: ../../../taskdef.json
           container-name: url-shortener
-          image: 446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo:${{ github.sha }}
+          image: 446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-${{ github.ref_name }}-repo:${{ github.sha }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: e2e-ecs-dev-service
-          cluster: e2e-ecs-dev-cluster
-          codedeploy-appspec: appspec.yml
-          codedeploy-application: e2e-ecs-dev-app
-          codedeploy-deployment-group: e2e-ecs-dev-dg
+          service: e2e-ecs-${{ github.ref_name }}-service
+          cluster: e2e-ecs-${{ github.ref_name }}-cluster
+          codedeploy-appspec: ../../../appspec.yml
+          codedeploy-application: e2e-ecs-${{ github.ref_name }}-app
+          codedeploy-deployment-group: e2e-ecs-${{ github.ref_name }}-dg
           wait-for-service-stability: true
     

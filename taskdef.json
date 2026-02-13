@@ -1,8 +1,8 @@
 {
-    "family": "e2e-ecs-dev-task",
+    "family": "e2e-ecs-ENVIRONMENT-task",
     "networkMode": "awsvpc",
-    "executionRoleArn": "arn:aws:iam::446781112519:role/e2e-ecs-dev-ecs-task-execution-role",
-    "taskRoleArn": "arn:aws:iam::446781112519:role/e2e-ecs-dev-ecs-task-role",
+    "executionRoleArn": "arn:aws:iam::446781112519:role/e2e-ecs-ENVIRONMENT-ecs-task-execution-role",
+    "taskRoleArn": "arn:aws:iam::446781112519:role/e2e-ecs-ENVIRONMENT-ecs-task-role",
     "requiresCompatibilities": [
         "FARGATE"
     ],
@@ -11,7 +11,7 @@
     "containerDefinitions": [
         {
             "name": "url-shortener",
-            "image": "446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-dev-repo:latest",
+            "image": "446781112519.dkr.ecr.eu-west-2.amazonaws.com/e2e-ecs-ENVIRONMENT-repo:latest",
             "essential": true,
             "portMappings": [
                 {
@@ -23,13 +23,13 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/e2e-ecs-dev-app",
+                    "awslogs-group": "/ecs/e2e-ecs-ENVIRONMENT-app",
                     "awslogs-region": "eu-west-2",
                     "awslogs-stream-prefix": "ecs"
                 }
             },
            "environment": [
-                { "name": "TABLE_NAME", "value": "e2e-ecs-dev-urls" }
+                { "name": "TABLE_NAME", "value": "e2e-ecs-ENVIRONMENT-urls" }
             ]
         }
     ]
