@@ -68,7 +68,7 @@ jobs:
         run: |
           sed -i "s/ENVIRONMENT/${{ github.ref_name }}/g" ../../../taskdef.json
           #just incase it breaks and i need to troubleshoot
-          cat taskdef.json
+          cat ../../../taskdef.json
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
