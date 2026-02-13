@@ -57,7 +57,8 @@ resource "aws_iam_role_policy" "github_actions_policy" {
           "logs:*",
           "ecr:*",
           "application-autoscaling:*",
-          "codedeploy:*"
+          "codedeploy:*",
+          "wafv2:*"
         ]
         Effect   = "Allow"
         Resource = "*"
